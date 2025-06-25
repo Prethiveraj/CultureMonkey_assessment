@@ -1,5 +1,3 @@
-# CultureMonkey_assessment
-
 # 🧠 CultureMonkey Internship Assessment – Skill Trend Detector API
 
 This project is part of the CultureMonkey Internship Assessment.  
