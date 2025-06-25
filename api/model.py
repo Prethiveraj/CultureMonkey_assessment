@@ -20,7 +20,7 @@ def match_skills(text,count):
         return {"error": "problem:" + str(issue)}
 
     if not skills:
-        return {"message": "Nothing found ."}
+        return {"message": "Nothing."}
 
     max_freq = max(count.values()) or 1
     total_result = []
