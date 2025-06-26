@@ -1,12 +1,11 @@
-# app.py
 from flask import Flask, request, jsonify
 import pandas as pd
 from model import build_count, match_skills
 app = Flask(__name__)
 
 
-df = pd.read_csv("dataset.csv")
-corpus = df["job_description_text"].dropna().tolist()
+data_base = pd.read_csv("dataset.csv")
+corpus = data_base["job_description_text"].dropna().tolist()
 freq_counter = build_count(corpus)
 
 
@@ -27,12 +26,12 @@ def detect_skills():
         texts = data["job_descriptions"]
         if not isinstance(texts, list) or not texts:
             return jsonify(
-                {"error": "Provide a non-empty list under 'job_descriptions'"}
+                {"error": "Provide a'job_descriptions'"} 
             ), 400
         return jsonify([match_skills(t, freq_counter) for t in texts])
 
     return jsonify(
-        {"error": "Use key 'job_description' or 'job_descriptions' in the JSON body"}
+        {"job_descriptions' in the JSON body"}
     ), 400
 
 
