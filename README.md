@@ -1,4 +1,4 @@
-# 🧠 CultureMonkey Internship Assessment – Skill Trend Detector API
+# CultureMonkey Internship Assessment – Skill Trend Detector API
 
 This project is part of the CultureMonkey Internship Assessment.  
 It uses **Python** and **Flask** to build a REST API that detects **technical skills** from job descriptions and classifies them as either:
@@ -10,11 +10,8 @@ The classification is based on how frequently each skill appears in real-world j
 
 ---
 
----
+## How to Run (Setup Instructions)
 
-## ⚙️ How to Run (Setup Instructions)
-
-### ✅ Step 1: Clone the repository
 
 ```bash
 git clone https://github.com/Prethiveraj/CultureMonkey_assessment.git
