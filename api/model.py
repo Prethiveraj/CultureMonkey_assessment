@@ -31,9 +31,7 @@ def match_skills(text,count):
     max_freq = max(count.values()) or 1
     total_result = []
 
-    unique_skills = list(set(found_skills))
-
-    for skill in unique_skills:
+    for skill in set(found_skills):
         freq = count.get(skill, 0)
         score = freq / max_freq
         if score < 0.4:
@@ -48,11 +46,3 @@ def match_skills(text,count):
         })
 
     return {"Found_skills": total_result}
-
-# Test data
-job_descriptions = [
-    "Python developer with Flask and AWS experience needed.",
-    "React and JavaScript frontend developer position.",
-    "Data scientist with machine learning and SQL skills required.",
-    "Cloud engineer with Azure and AWS knowledge."
-]
