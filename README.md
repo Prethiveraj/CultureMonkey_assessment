@@ -12,7 +12,6 @@ The classification is based on how frequently each skill appears in real-world j
 
 ## How to Run (Setup Instructions)
 
-### Step 1: Clone the repository
 
 ```bash
 git clone https://github.com/Prethiveraj/CultureMonkey_assessment.git
