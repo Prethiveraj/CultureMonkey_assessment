@@ -2,7 +2,7 @@ import requests
 
 url = "http://127.0.0.1:5000/detect-skills"
 single_tests = {
-    "job_description": "Python developer with Flask and AWS experience needed."
+    "job_description": "Python developer with Flask and AWS experience needed, PyTorch, TensorFlow."
 }
 
 

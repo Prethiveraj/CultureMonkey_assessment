@@ -1,60 +1,40 @@
+# app.py
 from flask import Flask, request, jsonify
-from model import match_skills
 import pandas as pd
-from collections import Counter
-import re
-
+from model import build_count, match_skills
 app = Flask(__name__)
 
-data_base = pd.read_csv("dataset.csv")
-data_base = data_base.dropna(subset=['job_description_text'])
 
-def filter_words(text):
-    return re.findall(r'\b[a-zA-Z]{3,}\b', text.lower())
+df = pd.read_csv("dataset.csv")
+corpus = df["job_description_text"].dropna().tolist()
+freq_counter = build_count(corpus)
 
-all_words = []
-for data in data_base['job_description_text']:
-    all_words.extend(filter_words(data))
-freq_counter = Counter(all_words)
 
 @app.route("/detect-skills", methods=["POST"])
-def detect_skills():    
-    data = request.get_json()
-    
+def detect_skills():
+    data = request.get_json(silent=True)
     if not data:
-        return jsonify({"No data provided"}), 400
-    
-    try:
-        if "job_description" in data:
-            words = data["job_description"]
-            if not words:
-                return jsonify({"Empty job desp"}), 400
-                
-            result = match_skills(words, freq_counter)
-            return jsonify(result)
-        
-        elif "job_descriptions" in data:
-            texts = data["job_descriptions"]
-            if not isinstance(texts, list) or not texts:
-                return jsonify({"Provide list of job desp"}), 400
-            
-            results = []
-            for text in texts:
-                try:
-                    skills = match_skills(text, freq_counter)
-                    results.append(skills)
-                except Exception as problem:
-                    results.append({"error": str(problem)})
-            
-            return jsonify(results)
-        
-        else:
-            return jsonify({"use the job desp"}), 400
-    
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": "No data provided"}), 400
+
+    if "job_description" in data:
+        text = data["job_description"]
+        if not text:
+            return jsonify({"error": "Empty job description"}), 400
+        return jsonify(match_skills(text, freq_counter))
+
+
+    if "job_descriptions" in data:
+        texts = data["job_descriptions"]
+        if not isinstance(texts, list) or not texts:
+            return jsonify(
+                {"error": "Provide a non-empty list under 'job_descriptions'"}
+            ), 400
+        return jsonify([match_skills(t, freq_counter) for t in texts])
+
+    return jsonify(
+        {"error": "Use key 'job_description' or 'job_descriptions' in the JSON body"}
+    ), 400
+
 
 if __name__ == "__main__":
     app.run(debug=True)
-
-

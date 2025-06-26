@@ -1,48 +1,57 @@
 from collections import Counter
 import re
+from statistics import quantiles            
 
-word_skills = {
-    "python", "javascript", "react", "node.js", "flask", "fastapi",
+SKILL_WORDS = {
+    "python", "javascript", "typescript", "react", "next.js", "node.js",
+    "flask", "fastapi", "django",
     "pytorch", "tensorflow", "machine learning", "deep learning",
-    "large language models","sql", "mongodb", "data science", "aws", "azure"
+    "large language models", "llm",
+    "sql", "mongodb", "postgresql", "data science",
+    "aws", "azure", "gcp"
 }
 
-def filter_words(text):
-    text = text.lower()
-    words = re.findall(r'\b[a-zA-Z]{3,}\b', text)
-    return [skill for skill in word_skills if skill in text]
+def filter_words(text: str) -> list[str]:
+    if not text:
+        return []
+    text_lc = text.lower()
+    return [skill for skill in SKILL_WORDS if skill in text_lc]
 
-def build_count(job_descriptions):
-    all_skills = []
-    for job_desc in job_descriptions:
-        skills = filter_words(job_desc)
-        all_skills.extend(skills)
-    return Counter(all_skills)
 
-def match_skills(text,count):
-    try:
-        found_skills = filter_words(text)
-    except Exception as issue:
-        return {"error": "problem:" + str(issue)}
+def build_count(job_descriptions: list[str]) -> Counter:
+    doc_freq = Counter()
+    for jd in job_descriptions:
+        doc_freq.update(set(filter_words(jd)))
+    return doc_freq
 
-    if not found_skills:
-        return {"message": "Nothing found ."}
 
-    max_freq = max(count.values()) or 1
-    total_result = []
+def number_hold(freq_counter: Counter) -> int:
 
-    for skill in set(found_skills):
-        freq = count.get(skill, 0)
-        score = freq / max_freq
-        if score < 0.4:
+    if not freq_counter:
+        return 1
+    q1, _, _ = quantiles(freq_counter.values(), n=4, method="inclusive")
+    return max(1, int(q1))
+
+def match_skills(text: str, freq_counter: Counter) -> dict:
+    found = filter_words(text)
+
+    if not found:
+        return {"No skills detected."}
+
+    q1_threshold = number_hold(freq_counter)
+
+    total = []
+    for skills in sorted(set(found)):
+        freq = freq_counter.get(skills, 0)
+        if freq < q1_threshold:
             label = "emerging"
         else:
             label = "established"
+        score = round(freq / max(freq_counter.values(), default=1), 2)
+        total.append(
+            {"skill": skills, "trend_score": score,
+             "category": label}
+        )
 
-        total_result.append({
-            "skill": skill,
-            "category": label,
-            "trend_score": round(score, 2)
-        })
+    return {"skills": total}
 
-    return {"Found_skills": total_result}
